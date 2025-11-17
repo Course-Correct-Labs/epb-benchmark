@@ -1,0 +1,95 @@
+name: EPB CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short
+
+      - name: Test spec files exist
+        run: |
+          test -f epb/spec/mirror_loop_v1.jsonl
+          test -f epb/spec/confabulation_v1.jsonl
+          test -f epb/spec/violation_state_v1.jsonl
+          test -f epb/spec/echo_chamber_v1.jsonl
+
+      - name: Test CLI commands
+        run: |
+          epb --version
+          epb --help
+          epb init-config --help
+          epb run --help
+          epb score --help
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black
+
+      - name: Check formatting with black
+        run: |
+          black --check --line-length 100 epb/ tests/ || true
+
+      - name: Lint with ruff
+        run: |
+          ruff check epb/ tests/ || true
+
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Check package
+        run: |
+          twine check dist/*

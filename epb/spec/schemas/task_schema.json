@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EPB Task Schema",
+  "description": "Schema for Epistemic Pathology Benchmark task specifications",
+  "type": "object",
+  "required": ["task_id", "battery", "description", "config"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Unique identifier for the task",
+      "pattern": "^[a-z_]+_[0-9]{3}$"
+    },
+    "battery": {
+      "type": "string",
+      "description": "The battery this task belongs to",
+      "enum": ["mirror_loop", "confabulation", "violation_state", "echo_chamber"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the task"
+    },
+    "config": {
+      "type": "object",
+      "description": "Battery-specific configuration",
+      "oneOf": [
+        {
+          "description": "Mirror Loop task configuration",
+          "required": ["initial_prompt", "loop_instruction"],
+          "properties": {
+            "initial_prompt": {
+              "type": "string",
+              "description": "The initial prompt to start the loop"
+            },
+            "loop_instruction": {
+              "type": "string",
+              "description": "The instruction to apply at each loop iteration"
+            }
+          }
+        },
+        {
+          "description": "Confabulation task configuration",
+          "required": ["question", "unanswerable"],
+          "properties": {
+            "question": {
+              "type": "string",
+              "description": "The question to ask the model"
+            },
+            "unanswerable": {
+              "type": "boolean",
+              "description": "Whether this question is designed to be unanswerable"
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of confabulation (e.g., 'obscure_fact', 'fictional_entity', 'citation')"
+            }
+          }
+        },
+        {
+          "description": "Violation State task configuration",
+          "required": ["turns"],
+          "properties": {
+            "turns": {
+              "type": "array",
+              "description": "Sequence of user turns",
+              "items": {
+                "type": "object",
+                "required": ["user_message", "is_benign"],
+                "properties": {
+                  "user_message": {
+                    "type": "string",
+                    "description": "The user message for this turn"
+                  },
+                  "is_benign": {
+                    "type": "boolean",
+                    "description": "Whether this turn is benign (should not trigger refusal)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "Echo Chamber task configuration",
+          "required": ["seed_text", "pattern"],
+          "properties": {
+            "seed_text": {
+              "type": "string",
+              "description": "The initial text to start the echo chamber"
+            },
+            "pattern": {
+              "type": "string",
+              "description": "The pattern to apply (e.g., 'iterative_summary', 'multi_agent')",
+              "enum": ["iterative_summary", "multi_agent"]
+            },
+            "instruction": {
+              "type": "string",
+              "description": "The instruction to apply at each round (e.g., 'Summarize the following text concisely')"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

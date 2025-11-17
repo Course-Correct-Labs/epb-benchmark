@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epb-benchmark"
+version = "1.0.0"
+description = "Epistemic Pathology Benchmark - The MLPerf of AI Truth Systems"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Course Correct Labs", email = "hello@coursecorrect.org"}
+]
+keywords = ["ai", "benchmark", "epistemic", "pathology", "truthfulness", "safety"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "click>=8.0.0",
+    "pyyaml>=6.0",
+    "jsonschema>=4.0.0",
+    "python-Levenshtein>=0.21.0",
+    "scikit-learn>=1.3.0",
+    "openai>=1.0.0",
+    "anthropic>=0.18.0",
+    "pydantic>=2.0.0",
+    "tqdm>=4.65.0",
+    "numpy>=1.24.0",
+]
+
+[project.optional-dependencies]
+leaderboard = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "sqlalchemy>=2.0.0",
+    "python-multipart>=0.0.6",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+
+[project.scripts]
+epb = "epb.cli.main:cli"
+
+[project.urls]
+Homepage = "https://github.com/Course-Correct-Labs/epb-benchmark"
+Documentation = "https://github.com/Course-Correct-Labs/epb-benchmark/tree/main/docs"
+Repository = "https://github.com/Course-Correct-Labs/epb-benchmark"
+Issues = "https://github.com/Course-Correct-Labs/epb-benchmark/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["epb*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
