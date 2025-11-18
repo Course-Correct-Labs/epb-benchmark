@@ -172,6 +172,16 @@ config = ModelConfig(
 client = AnthropicClient(config)
 ```
 
+**OpenAI Model Support**:
+
+EPB automatically handles different OpenAI API parameters based on model type:
+
+- **GPT-4 and earlier** (`gpt-4`, `gpt-4-turbo`, `gpt-4.1-mini`, `gpt-4o`): Sends `max_tokens`
+- **GPT-5 series** (`gpt-5`, `gpt-5-mini`, `gpt-5.1`, etc.): Sends `max_completion_tokens`
+- **Reasoning models** (`o1`, `o1-mini`, `o1-preview`, `o3`, `o3-mini`): Sends `max_completion_tokens`
+
+The `max_tokens` parameter in `ModelConfig` is the logical maximum completion length. The adapter automatically chooses the correct OpenAI API parameter name based on the `model_name`. No config changes needed when switching between model families.
+
 #### Using a Model Client
 
 ```python

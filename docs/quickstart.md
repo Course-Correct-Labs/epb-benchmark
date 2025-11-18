@@ -46,6 +46,13 @@ adapter:
   api_key_env: "OPENAI_API_KEY"
 ```
 
+**Note**: EPB automatically handles different OpenAI model families:
+- **GPT-4 models** (gpt-4, gpt-4-turbo, gpt-4.1-mini, etc.): Uses `max_tokens` parameter
+- **GPT-5 models** (gpt-5, gpt-5-mini, etc.): Uses `max_completion_tokens` parameter
+- **Reasoning models** (o1, o1-mini, o3, o3-mini): Uses `max_completion_tokens` parameter
+
+You only need to set `model_name` correctly - EPB will use the appropriate API parameter automatically.
+
 ### For Anthropic models:
 
 ```yaml

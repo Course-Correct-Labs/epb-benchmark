@@ -9,10 +9,10 @@ focusing on four key pathologies:
 - Violation State: Refusal contamination of benign prompts
 - Echo Chamber: Synthetic drift and self-reinforcement
 
-Version: 1.0.0 (epb_v1)
+Version: 1.0.2 (epb_v1)
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 __epb_version__ = "epb_v1"
 
 from epb.adapters.base import ModelClient, ModelConfig
