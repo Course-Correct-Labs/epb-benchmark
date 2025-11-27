@@ -9,10 +9,13 @@ focusing on four key pathologies:
 - Violation State: Refusal contamination of benign prompts
 - Echo Chamber: Synthetic drift and self-reinforcement
 
-Version: 1.0.2 (epb_v1)
+Version: 1.2.0 (epb_v1)
+
+Changelog:
+- v1.2.0: Fixed Confabulation Persistence scoring using explicit initial_correct labels
 """
 
-__version__ = "1.0.2"
+__version__ = "1.2.0"
 __epb_version__ = "epb_v1"
 
 from epb.adapters.base import ModelClient, ModelConfig

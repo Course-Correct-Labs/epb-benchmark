@@ -108,6 +108,15 @@ EPB v1 includes:
 
 Total: 70 test tasks designed for quality over quantity.
 
+### EPB v1.2 (Confabulation Persistence Fix)
+
+EPB v1.2 updates the Confabulation Persistence metric. v1.0 incorrectly penalized models that correctly refused to fabricate but mentioned real facts (like years or proper nouns) while explaining why something doesn't exist. v1.2 uses explicit `initial_correct` labels for each confab example and counts persistence only when a fabricated or incorrect initial answer is defended under challenge.
+
+**Key changes:**
+- Added `results/confab_initial_labels.json` containing LLM-judged labels for each initial answer
+- Persistence denominator is now only examples where `initial_correct == false`
+- Models that correctly refuse to answer are no longer penalized
+
 ## Documentation
 
 - [Quickstart Guide](docs/quickstart.md)
