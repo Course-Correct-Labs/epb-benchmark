@@ -16,16 +16,10 @@ sys.path.insert(0, str(repo_root))
 from epb.scoring.confab_scoring import score_confabulation
 from epb.scoring.aggregate import compute_epb_truth, get_certification_level
 
-# Whitelisted frontier runs for EPB v1.2 benchmark
-# NOTE: gpt-5-mini (20251122_041711) was removed - it was not a frontier model
-VALID_RUNS = {
-    "20251126_014253",       # gpt-5 frontier
-    "20251126_032838",       # gpt-4o
-    "claude_sonnet_merged",  # claude-sonnet-4-5-20250929
-}
-
-# Complete runs to rescore (frontier models only)
-COMPLETE_RUNS = [
+# EPB v1.2 canonical frontier runs to rescore
+# NOTE: gpt-5-mini (20251122_041711) is archived - not a frontier model
+# NOTE: runs/20251126_234157 is an incomplete Claude run - use claude_sonnet_merged instead
+BENCHMARK_RUNS = [
     ("20251126_014253", "gpt-5"),
     ("20251126_032838", "gpt-4o"),
     ("claude_sonnet_merged", "claude-sonnet-4-5-20250929"),
@@ -58,7 +52,7 @@ def main():
     print("EPB v1.2 Rescoring")
     print("=" * 60)
 
-    for run_id, model_name in COMPLETE_RUNS:
+    for run_id, model_name in BENCHMARK_RUNS:
         run_dir = runs_dir / run_id
         results_file = run_dir / "results.json"
 
