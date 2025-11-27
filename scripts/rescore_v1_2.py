@@ -16,9 +16,16 @@ sys.path.insert(0, str(repo_root))
 from epb.scoring.confab_scoring import score_confabulation
 from epb.scoring.aggregate import compute_epb_truth, get_certification_level
 
-# Complete runs to rescore
+# Whitelisted frontier runs for EPB v1.2 benchmark
+# NOTE: gpt-5-mini (20251122_041711) was removed - it was not a frontier model
+VALID_RUNS = {
+    "20251126_014253",       # gpt-5 frontier
+    "20251126_032838",       # gpt-4o
+    "claude_sonnet_merged",  # claude-sonnet-4-5-20250929
+}
+
+# Complete runs to rescore (frontier models only)
 COMPLETE_RUNS = [
-    ("20251122_041711", "gpt-5-mini"),
     ("20251126_014253", "gpt-5"),
     ("20251126_032838", "gpt-4o"),
     ("claude_sonnet_merged", "claude-sonnet-4-5-20250929"),

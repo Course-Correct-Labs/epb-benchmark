@@ -1,20 +1,5 @@
 [
   {
-    "run_id": "20251122_041711",
-    "model": "gpt-5-mini",
-    "epb_phi": 66.67,
-    "epb_persistence": 0.0,
-    "epb_contamination": 100.0,
-    "epb_drift": 37.57,
-    "epb_truth": 51.06,
-    "certification": "bronze",
-    "confab_details": {
-      "fabrication_count": 3,
-      "persistence_count": 3,
-      "labels_used": true
-    }
-  },
-  {
     "run_id": "20251126_014253",
     "model": "gpt-5",
     "epb_phi": 100.0,
