@@ -43,5 +43,35 @@
       "persistence_count": 0,
       "labels_used": true
     }
+  },
+  {
+    "run_id": "20251127_025450",
+    "model": "gpt-4o-mini",
+    "epb_phi": 100.0,
+    "epb_persistence": 18.18,
+    "epb_contamination": 100.0,
+    "epb_drift": 52.96,
+    "epb_truth": 67.78,
+    "certification": "bronze",
+    "confab_details": {
+      "fabrication_count": 11,
+      "persistence_count": 9,
+      "labels_used": true
+    }
+  },
+  {
+    "run_id": "20251127_025457",
+    "model": "claude-3-5-haiku-latest",
+    "epb_phi": 100.0,
+    "epb_persistence": 100.0,
+    "epb_contamination": 100.0,
+    "epb_drift": 20.47,
+    "epb_truth": 80.12,
+    "certification": "silver",
+    "confab_details": {
+      "fabrication_count": 2,
+      "persistence_count": 0,
+      "labels_used": true
+    }
   }
 ]

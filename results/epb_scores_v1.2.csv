@@ -2,3 +2,5 @@ model,epb_phi,epb_persistence,epb_contamination,epb_drift,epb_truth,certificatio
 gpt-5,100.0,0.0,100.0,19.06,54.77,bronze
 gpt-4o,100.0,50.0,100.0,51.87,75.47,silver
 claude-sonnet-4-5-20250929,100.0,100.0,100.0,38.32,84.58,silver
+gpt-4o-mini,100.0,18.18,100.0,52.96,67.78,bronze
+claude-3-5-haiku-latest,100.0,100.0,100.0,20.47,80.12,silver

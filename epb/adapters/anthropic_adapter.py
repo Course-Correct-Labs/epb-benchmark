@@ -41,14 +41,17 @@ class AnthropicClient(ModelClient):
         """
         messages = [{"role": "user", "content": prompt}]
 
-        response = self.client.messages.create(
-            model=self.config.model_name,
-            messages=messages,
-            system=system_prompt or "",
-            temperature=kwargs.get("temperature", self.config.temperature),
-            max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
-            top_p=kwargs.get("top_p", self.config.top_p),
-        )
+        # Build API params - Claude Sonnet 4.5 doesn't allow both temperature and top_p
+        api_params = {
+            "model": self.config.model_name,
+            "messages": messages,
+            "system": system_prompt or "",
+            "max_tokens": kwargs.get("max_tokens", self.config.max_tokens),
+        }
+        # Only add temperature (not top_p) to avoid Claude API conflict
+        api_params["temperature"] = kwargs.get("temperature", self.config.temperature)
+
+        response = self.client.messages.create(**api_params)
 
         # Extract text from response
         if response.content and len(response.content) > 0:
@@ -71,14 +74,17 @@ class AnthropicClient(ModelClient):
         Returns:
             The model's response text
         """
-        response = self.client.messages.create(
-            model=self.config.model_name,
-            messages=turns,
-            system=system_prompt or "",
-            temperature=kwargs.get("temperature", self.config.temperature),
-            max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
-            top_p=kwargs.get("top_p", self.config.top_p),
-        )
+        # Build API params - Claude Sonnet 4.5 doesn't allow both temperature and top_p
+        api_params = {
+            "model": self.config.model_name,
+            "messages": turns,
+            "system": system_prompt or "",
+            "max_tokens": kwargs.get("max_tokens", self.config.max_tokens),
+        }
+        # Only add temperature (not top_p) to avoid Claude API conflict
+        api_params["temperature"] = kwargs.get("temperature", self.config.temperature)
+
+        response = self.client.messages.create(**api_params)
 
         # Extract text from response
         if response.content and len(response.content) > 0:
