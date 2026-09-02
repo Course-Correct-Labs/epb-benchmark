@@ -2,6 +2,30 @@
 
 The EPB Leaderboard is a public ranking of AI models based on their epistemic integrity, as measured by the Epistemic Pathology Benchmark.
 
+## Legacy/Noncanonical Notice
+
+The ranking below is built entirely from the **legacy** `epb_truth` score
+and **legacy** certification tier -- a weighted average of four historical
+sub-scores, thresholded into a badge. Per
+[`EPB_V1_FINAL_INTEGRATION_FREEZE.md`](../EPB_V1_FINAL_INTEGRATION_FREEZE.md),
+both are explicitly **legacy/noncanonical**: no current EPB quantity is
+`FROZEN`, so none is eligible for canonical downstream consumption, and
+`epb_truth`/certification are retained only for backward compatibility.
+**Do not interpret leaderboard rank, "higher score", or certification
+badge as a validated, canonical, or Observatory-grade scientific
+comparison between models.** The current structured scientific outputs
+(`results.json["quantities"]`, one entry per measurable quantity with its
+own measurement/validation state) are not yet part of this leaderboard.
+
+## Availability Note
+
+`coursecorrect.org` does not currently resolve (checked at release time).
+Everything below documents the leaderboard's intended interface and
+protocol -- it is not a confirmation that a production instance is
+currently live. `epb submit` will fail with a connection error against
+this URL until a real instance is available; see "Running Your Own
+Leaderboard" below to self-host one.
+
 ## Accessing the Leaderboard
 
 Visit: https://epb.coursecorrect.org (or your deployed instance)
@@ -49,7 +73,8 @@ Your submission includes:
 
 ## Leaderboard Rankings
 
-Models are ranked by their **EPB Truth** score (0-100, higher is better).
+Models are ranked by their legacy/noncanonical **EPB Truth** score (0-100,
+higher is better) -- see the notice above.
 
 ### Certification Levels
 

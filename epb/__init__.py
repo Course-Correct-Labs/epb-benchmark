@@ -9,13 +9,20 @@ focusing on four key pathologies:
 - Violation State: Refusal contamination of benign prompts
 - Echo Chamber: Synthetic drift and self-reinforcement
 
-Version: 1.2.0 (epb_v1)
+Version: 2.0.0 (epb_v1)
+
+Package version (`__version__`) tracks `pyproject.toml`'s canonical
+release version -- it is NOT the scientific evidence/result-schema
+compatibility gate. Result-structure compatibility is versioned
+separately via `epb.scoring.result.RESULT_SCHEMA_VERSION` and
+`epb.adapters.base.OBSERVATION_SCHEMA_VERSION`; do not infer scoring
+compatibility from this value.
 
 Changelog:
-- v1.2.0: Fixed Confabulation Persistence scoring using explicit initial_correct labels
+- v1.2.0 (scoring methodology label, see CHANGELOG.md): Fixed Confabulation Persistence scoring using explicit initial_correct labels
 """
 
-__version__ = "1.2.0"
+__version__ = "2.0.0"
 __epb_version__ = "epb_v1"
 
 from epb.adapters.base import ModelClient, ModelConfig

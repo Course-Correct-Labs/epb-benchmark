@@ -2,9 +2,10 @@
 
 from typing import Any, Dict, List, Optional
 
+import openai
 from openai import OpenAI
 
-from epb.adapters.base import ModelClient, ModelConfig
+from epb.adapters.base import ModelClient, ModelConfig, Observation, ObservationKind
 
 
 def _is_gpt5_or_reasoning_model(model_name: str) -> bool:
@@ -58,6 +59,75 @@ def _apply_max_token_param(
         body["max_tokens"] = max_tokens
 
 
+# finish_reason values for which the SDK never populates message.content at
+# all -- the model's turn ended in a non-text terminal state (a tool/function
+# call) rather than a text response. Grounded directly against the
+# openai-python Choice.finish_reason schema (verified offline, see
+# EPB_PHASE1_FOUNDATIONAL_REPAIR.md): "stop", "length", "tool_calls",
+# "content_filter", "function_call".
+_NON_TEXT_FINISH_REASONS = {"tool_calls", "function_call"}
+
+
+def _classify_openai_response(response: Any) -> Observation:
+    """Classify a successful OpenAI ChatCompletion response into an Observation.
+
+    Preserves, rather than discards, the two structured signals the
+    pre-Phase-1 adapter never read: `message.refusal` (the SDK's native
+    refusal field) and `choices[0].finish_reason`. A model-authored refusal
+    written as ordinary assistant text is left as VALID_TEXT -- refusal
+    *language* alone is not turned into a failure state; only the
+    structured `.refusal` field or a `content_filter` finish_reason (a
+    platform-level intervention, not model-authored text) does that.
+
+    Branch order matters: any available provider-terminal evidence
+    (refusal, content_filter, a non-text terminal state, or truncation)
+    is checked BEFORE the generic empty/whitespace text-shape checks, so
+    that e.g. whitespace-only content produced under `finish_reason ==
+    "length"` is classified TRUNCATED, not WHITESPACE_ONLY_TEXT -- the
+    terminal reason is real, observed evidence and must not be silently
+    discarded just because the leftover text happens to be blank.
+    """
+    choice = response.choices[0]
+    message = choice.message
+    finish_reason = choice.finish_reason
+    refusal = getattr(message, "refusal", None)
+    content = message.content
+
+    if refusal:
+        return Observation(
+            text=refusal,
+            kind=ObservationKind.PROVIDER_REFUSAL,
+            finish_reason=finish_reason,
+        )
+
+    if finish_reason == "content_filter":
+        return Observation(
+            text=content or "",
+            kind=ObservationKind.PROVIDER_REFUSAL,
+            finish_reason=finish_reason,
+        )
+
+    if finish_reason in _NON_TEXT_FINISH_REASONS and not content:
+        return Observation(
+            text="", kind=ObservationKind.NON_TEXT_TERMINAL, finish_reason=finish_reason
+        )
+
+    if finish_reason == "length":
+        return Observation(
+            text=content or "", kind=ObservationKind.TRUNCATED, finish_reason=finish_reason
+        )
+
+    if not content:
+        return Observation(text="", kind=ObservationKind.EMPTY_TEXT, finish_reason=finish_reason)
+
+    if content.strip() == "":
+        return Observation(
+            text=content, kind=ObservationKind.WHITESPACE_ONLY_TEXT, finish_reason=finish_reason
+        )
+
+    return Observation(text=content, kind=ObservationKind.VALID_TEXT, finish_reason=finish_reason)
+
+
 class OpenAIClient(ModelClient):
     """OpenAI model client implementation.
 
@@ -79,7 +149,7 @@ class OpenAIClient(ModelClient):
         prompt: str,
         system_prompt: Optional[str] = None,
         **kwargs: Any
-    ) -> str:
+    ) -> Observation:
         """Generate a response to a single prompt.
 
         Args:
@@ -88,7 +158,7 @@ class OpenAIClient(ModelClient):
             **kwargs: Additional OpenAI API parameters
 
         Returns:
-            The model's response text
+            A typed Observation. See ModelClient.generate.
         """
         messages = []
 
@@ -112,16 +182,23 @@ class OpenAIClient(ModelClient):
             max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
         )
 
-        response = self.client.chat.completions.create(**body)
+        try:
+            response = self.client.chat.completions.create(**body)
+        except openai.OpenAIError as e:
+            return Observation(
+                text="",
+                kind=ObservationKind.PROVIDER_ERROR,
+                error=f"{type(e).__name__}: {e}",
+            )
 
-        return response.choices[0].message.content or ""
+        return _classify_openai_response(response)
 
     def generate_chat(
         self,
         turns: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
         **kwargs: Any
-    ) -> str:
+    ) -> Observation:
         """Generate a response given conversation history.
 
         Args:
@@ -130,7 +207,7 @@ class OpenAIClient(ModelClient):
             **kwargs: Additional OpenAI API parameters
 
         Returns:
-            The model's response text
+            A typed Observation. See ModelClient.generate.
         """
         messages = []
 
@@ -154,9 +231,16 @@ class OpenAIClient(ModelClient):
             max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
         )
 
-        response = self.client.chat.completions.create(**body)
+        try:
+            response = self.client.chat.completions.create(**body)
+        except openai.OpenAIError as e:
+            return Observation(
+                text="",
+                kind=ObservationKind.PROVIDER_ERROR,
+                error=f"{type(e).__name__}: {e}",
+            )
 
-        return response.choices[0].message.content or ""
+        return _classify_openai_response(response)
 
     def get_name(self) -> str:
         """Get the model's display name.

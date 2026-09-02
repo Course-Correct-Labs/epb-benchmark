@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "epb-benchmark"
-version = "1.0.2"
+version = "2.0.0"
 description = "Epistemic Pathology Benchmark - The MLPerf of AI Truth Systems"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -58,7 +58,7 @@ epb = "epb.cli.main:cli"
 
 [project.urls]
 Homepage = "https://github.com/Course-Correct-Labs/epb-benchmark"
-Documentation = "https://github.com/Course-Correct-Labs/epb-benchmark/tree/main/docs"
+Documentation = "https://github.com/Course-Correct-Labs/epb-benchmark/tree/HEAD/docs"
 Repository = "https://github.com/Course-Correct-Labs/epb-benchmark"
 Issues = "https://github.com/Course-Correct-Labs/epb-benchmark/issues"
 

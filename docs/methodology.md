@@ -200,6 +200,15 @@ EPB is based on research from Course Correct Labs:
 - Mirror Loop: https://github.com/Course-Correct-Labs/mirror-loop
 - Recursive Confabulation: https://github.com/Course-Correct-Labs/recursive-confabulation
 - Violation State: https://github.com/Course-Correct-Labs/violation-state
-- Echo Chamber Zero: https://github.com/Course-Correct-Labs/echo-chamber-zero
+
+Note: an earlier version of this list also cited "Echo Chamber Zero"
+(https://github.com/Course-Correct-Labs/echo-chamber-zero) as the basis for
+the Echo Chamber battery above. That citation was inaccurate and has been
+removed: Echo Chamber Zero is separate, theoretical Course Correct Labs
+work, not an EPB battery, and is not the scientific basis for the
+empirical Echo Chamber battery implemented here (see "4. Echo Chamber"
+above for its actual, directly-described method -- iterative
+summarization plus TF-IDF cosine similarity). No independent citation is
+substituted; the method is described directly instead.
 
 For detailed scoring formulas, see [Scoring Documentation](scoring.md).

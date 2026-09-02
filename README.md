@@ -98,6 +98,29 @@ The overall **EPB Truth** score is a weighted average of the four sub-scores (de
 - **Silver**: 70+
 - **Bronze**: 50+
 
+### Current Scientific Status (EPB v1 Final Integration)
+
+The descriptions above ("Score: 0-100", "EPB Truth", certification tiers)
+are EPB's original, legacy presentation. As of EPB v1's final integration
+pass, they are **legacy / noncanonical**: `epb_truth` and certification
+levels are retained for backward compatibility only and do not represent
+a validated, canonical benchmark conclusion. Each battery's underlying
+measurement is now reported as a structured result with its own
+measurement state (was a value obtained at all?) and validation status
+(how scientifically established is that measurement pathway?); no current
+quantity meets the bar (`SCORED` + `FROZEN`) required for canonical
+downstream consumption -- **included in EPB v1 does not mean canonically
+validated.** Confabulation reports two independent quantities
+(`fabrication_incidence`, `persistence`), so EPB v1 exposes **five**
+structured scientific quantities across its four batteries. The current
+structured representation of a scored run lives at
+`results.json["quantities"]` -- one entry per quantity, each carrying its
+own `measurement_state`, `validation_status`, `planned`/`applicable`/
+`usable`/`coverage`, and a derived `canonical_consumption_eligible`. See
+`EPB_V1_FINAL_INTEGRATION_FREEZE.md` for the current authoritative
+posture, including Echo Chamber's inclusion-but-PROVISIONAL status and
+the historical-result notice in `CHANGELOG.md`.
+
 ## EPB v1 Test Suite
 
 EPB v1 includes:
@@ -125,6 +148,12 @@ EPB v1.2 updates the Confabulation Persistence metric. v1.0 incorrectly penalize
 - [API Reference](docs/api.md)
 
 ## Leaderboard
+
+**Note**: `coursecorrect.org` does not currently resolve (checked at
+release time) -- treat the instructions below as documentation for a
+leaderboard deployment, not a confirmed live production service. `epb
+submit` will fail with a connection error until a real
+`EPB_LEADERBOARD_URL` is available.
 
 Submit your results to the public leaderboard:
 
@@ -187,7 +216,12 @@ Related work:
 - [Mirror Loop](https://github.com/Course-Correct-Labs/mirror-loop)
 - [Recursive Confabulation](https://github.com/Course-Correct-Labs/recursive-confabulation)
 - [Violation State](https://github.com/Course-Correct-Labs/violation-state)
-- [Echo Chamber Zero](https://github.com/Course-Correct-Labs/echo-chamber-zero)
+
+Note: [Echo Chamber Zero](https://github.com/Course-Correct-Labs/echo-chamber-zero)
+is separate, theoretical Course Correct Labs work. It is **not** an EPB
+battery and is not the scientific basis for EPB's empirical Echo Chamber
+battery above (see `docs/methodology.md` for the correction and the
+battery's actual, directly-described method).
 
 ## Support
 

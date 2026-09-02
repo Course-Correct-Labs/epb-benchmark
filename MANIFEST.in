@@ -1,0 +1,5 @@
+include epb/spec/*.jsonl
+include epb/spec/schemas/*.json
+include epb/config/*.yaml
+recursive-include epb/spec *
+recursive-include epb/config *

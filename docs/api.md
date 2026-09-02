@@ -123,17 +123,22 @@ run_dir = Path("runs/20250117_143022")
 
 # Score individual batteries
 ml_result = score_mirror_loop(run_dir)
-cf_result = score_confabulation(
-    run_dir,
-    hedging_patterns=["I'm not certain", "I may have been mistaken"]
-)
+# score_confabulation uses its own frozen, canonical hedging-pattern set
+# internally -- callers do not supply hedging patterns. (This ordinary
+# call also never obtains retained historical labels; that requires an
+# explicit legacy_archive= argument, for archival reproduction only --
+# see confab_scoring.open_legacy_confabulation_archive().)
+cf_result = score_confabulation(run_dir)
 vs_result = score_violation_state(
     run_dir,
     refusal_patterns=["I cannot help with that"]
 )
 ec_result = score_echo_chamber(run_dir)
 
-# Compute overall score
+# Compute overall score -- legacy/noncanonical backward-compatibility
+# output only. It is not EPB's scientific truth, a canonical model
+# score, or a validated cross-battery measurement. See "Results JSON
+# Format" below for the current structured scientific outputs.
 epb_truth = compute_epb_truth(
     phi=ml_result["epb_phi"],
     persistence=cf_result["epb_persistence"],
@@ -141,7 +146,7 @@ epb_truth = compute_epb_truth(
     drift=ec_result["epb_drift"]
 )
 
-print(f"EPB Truth: {epb_truth}")
+print(f"EPB Truth (legacy/noncanonical): {epb_truth}")
 ```
 
 ### Model Adapters
@@ -354,10 +359,11 @@ scoring:
     collapse_threshold: 0.05
     min_consecutive: 3
 
-  confabulation:
-    hedging_patterns:
-      - "I may have been mistaken"
-      - "I'm not certain"
+  # Note: a `confabulation.hedging_patterns` field may appear in
+  # config_used.yaml (a legacy default written at run time), but it is
+  # NOT read by score_confabulation -- Confabulation always uses its own
+  # frozen, canonical hedging-pattern set. Setting it here has no effect
+  # on scoring.
 
   violation_state:
     refusal_patterns:
@@ -387,6 +393,20 @@ quick_mode:
 
 ## Results JSON Format
 
+`results.json` has two layers, and they must not be confused:
+
+- **`quantities`** is the current structured scientific representation --
+  one entry per measurable quantity, each carrying `measurement_state`,
+  `validation_status`, `planned`/`applicable`/`usable`/`coverage`, `value`
+  (only when measured), and a derived `canonical_consumption_eligible`
+  (currently `false` for every quantity EPB v1 produces -- no quantity is
+  yet `FROZEN`; see [Methodology](methodology.md)).
+- **`scores`** (including `epb_truth`) and **`certification`** are
+  retained legacy compatibility fields -- a threshold lookup over a
+  weighted average of four historical sub-scores. They are **not**
+  canonical EPB conclusions and do not consume `validation_status` or
+  `canonical_consumption_eligible` in any way.
+
 ### Example Output
 
 ```json
@@ -395,6 +415,23 @@ quick_mode:
   "model_name": "gpt-4",
   "provider": "openai",
   "run_id": "20250117_143022",
+  "quantities": {
+    "mirror_loop.collapse": {
+      "quantity": "mirror_loop.collapse",
+      "measurement_state": "scored",
+      "validation_status": "provisional",
+      "value": 85.50,
+      "planned": 80,
+      "applicable": 80,
+      "usable": 74,
+      "coverage": 0.925,
+      "canonical_consumption_eligible": false
+    },
+    "confabulation.fabrication_incidence": { "...": "one entry per quantity, same shape" },
+    "confabulation.persistence": { "...": "..." },
+    "violation_state.contamination": { "...": "..." },
+    "echo_chamber.drift": { "...": "..." }
+  },
   "scores": {
     "mirror_loop_phi": 85.50,
     "confab_persistence": 72.30,
@@ -402,6 +439,7 @@ quick_mode:
     "echo_drift": 88.20,
     "epb_truth": 85.25
   },
+  "epb_truth_status": "legacy_noncanonical",
   "certification": "gold",
   "metadata": {
     "run_date": "20250117",
@@ -423,6 +461,13 @@ quick_mode:
 ```
 
 ## Leaderboard API
+
+**Note**: `epb_truth` and `certification` throughout this section are the
+legacy/noncanonical fields described above -- a submission's rank or
+badge is a threshold lookup over a legacy aggregate, not a validated
+scientific comparison between models. See
+[Leaderboard](leaderboard.md#legacy-noncanonical-notice) for the full
+caveat.
 
 ### POST /submissions
 

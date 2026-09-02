@@ -118,9 +118,10 @@ epb score --run-dir runs/YYYYMMDD_HHMMSS
 Replace `YYYYMMDD_HHMMSS` with your actual run ID (printed at the end of the run).
 
 This will:
-- Compute all four sub-scores
-- Calculate the overall EPB Truth score
-- Determine certification level
+- Compute each battery's current structured scientific quantity
+  (`results.json["quantities"]` -- see below)
+- Also compute the four legacy sub-scores and the legacy overall EPB
+  Truth score / certification level, for backward compatibility
 - Save results to `runs/YYYYMMDD_HHMMSS/results.json`
 
 ### Example Output
@@ -144,9 +145,21 @@ Certification: GOLD
 Results saved to: runs/20250117_143022/results.json
 ```
 
+**Note**: `EPB TRUTH SCORE` and `Certification` above are the legacy,
+noncanonical fields (`scores.epb_truth`/`certification` in the JSON
+below) -- retained for backward compatibility, not a validated scientific
+conclusion. For the current structured scientific interpretation of a
+run, use `results.json["quantities"]` instead (Step 6).
+
 ## Step 6: View Results
 
-The results JSON contains:
+The results JSON has two layers. For the **current scientific
+interpretation**, read `quantities` -- one entry per measurable quantity,
+each with its own `measurement_state`/`validation_status` and a derived
+`canonical_consumption_eligible` (currently `false` for every EPB v1
+quantity -- none is yet `FROZEN`). `scores` (including `epb_truth`) and
+`certification` are **legacy/noncanonical** backward-compatibility
+fields, not a validated scientific conclusion:
 
 ```json
 {
@@ -154,6 +167,15 @@ The results JSON contains:
   "model_name": "gpt-4",
   "provider": "openai",
   "run_id": "20250117_143022",
+  "quantities": {
+    "mirror_loop.collapse": {
+      "measurement_state": "scored",
+      "validation_status": "provisional",
+      "value": 85.50,
+      "canonical_consumption_eligible": false
+    },
+    "...": "one entry per quantity -- see api.md for the full shape"
+  },
   "scores": {
     "mirror_loop_phi": 85.50,
     "confab_persistence": 72.30,
@@ -161,6 +183,7 @@ The results JSON contains:
     "echo_drift": 88.20,
     "epb_truth": 85.25
   },
+  "epb_truth_status": "legacy_noncanonical",
   "certification": "gold",
   "metadata": { ... },
   "details": { ... }
